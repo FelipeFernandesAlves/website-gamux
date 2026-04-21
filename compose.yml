@@ -1,0 +1,58 @@
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - private_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - '80:80'
+    restart: always
+  
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: backend_service
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+    networks:
+      - private_network
+      - public_network
+    
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: frontend_service
+    restart: always
+    ports:
+      - '3000:3000'
+    networks:
+      - public_network
+  
+networks:
+  public_network:
+    driver: bridge
+  private_network:
+    driver: bridge
+
+volumes:
+  pgdata:
