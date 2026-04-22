@@ -1,4 +1,7 @@
+include:
+  - env_file: ./.env.prod
 
+name: website-gamux
 services:
   postgres:
     image: postgres:16-alpine
@@ -15,20 +18,31 @@ services:
       - private_network
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     container_name: nginx_proxy
+    restart: always
     ports:
       - '80:80'
-    restart: always
+      - '443:443'
+    depends_on:
+      - frontend
+      - backend
+    environment:
+      - FRONTEND_PORT=${FRONTEND_PORT:-5173}
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+    networks:
+      - public_network
   
   backend:
     build: 
       context: ./backend
       dockerfile: Dockerfile.prod
+    image: gamux/api-gamux:latest
     container_name: backend_service
     restart: always
     env_file:
-      - .env
+      - .env.prod
     ports:
       - '8080:8080'
     depends_on:
@@ -41,10 +55,11 @@ services:
     build: 
       context: ./frontend
       dockerfile: Dockerfile.prod
+    image: gamux/website-gamux:latest
     container_name: frontend_service
     restart: always
     ports:
-      - '3000:3000'
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     networks:
       - public_network
   
