@@ -1,6 +1,6 @@
 import "./project-preview.css"
 
-function ProjectPreview(props) {
+function ProjectPreview(props: any) {
     const {project} = props
     
     return (

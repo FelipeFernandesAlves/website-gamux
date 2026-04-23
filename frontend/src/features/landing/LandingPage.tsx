@@ -78,7 +78,7 @@ function LandingPage() {
                 </div>
 
                 <a href='https://gamux.itch.io/' target='_blank'>
-                    <button className="dark">Lista Completa <span class="material-symbols-outlined">chevron_right</span></button>
+                    <button className="dark">Lista Completa <span className="material-symbols-outlined">chevron_right</span></button>
                 </a>
                 <div className='whitespace'></div>
             </div>
