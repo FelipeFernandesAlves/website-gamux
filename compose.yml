@@ -59,7 +59,7 @@ services:
     container_name: frontend_service
     restart: always
     ports:
-      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
     networks:
       - public_network
   
