@@ -1,8 +1,8 @@
 import "./landing-page.css";
-import GameProject from "../../classes/GameProject";
+import GameProject from "../../shared/classes/gamux-project/GamuxProject";
 import ProjectPreview from "./components/ProjectPreview";
-import Footer from "../../components/Footer";
-import Header from "../../components/header";
+import Footer from "../../shared/components/Footer";
+import Header from "../../shared/components/Header";
 
 const projects = [
     new GameProject("Gamutoware", "gamutoware.png", "https://moraguma.itch.io/gamutoware"),

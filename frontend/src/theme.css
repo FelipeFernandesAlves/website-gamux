@@ -1,9 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap');
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: #684294;
+  --color-primary: #A411CD;
   --color-secondary: #f8f0fb;
-  --color-background: '#0D160B';
+  --color-background: #110B16;
+  --color-hero-from: #684294;
+  --color-hero-to: #862AB1;
+
+  --font-title: "Fredoka", sans-serif;
+  --font-text: "Outfit", sans-serif;
 }
 
 /*
