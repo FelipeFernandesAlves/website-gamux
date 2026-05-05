@@ -1,6 +1,6 @@
 include:
   - path: ./compose.yml
-  - env_file: ./.env.example
+  - env_file: ./.env.dev
 
 services:
   backend:
