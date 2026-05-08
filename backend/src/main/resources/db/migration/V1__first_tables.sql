@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TYPE "project_status" AS ENUM (
   'FINALIZADO',
-  'EM PROGRESSO',
+  'EM_PROGRESSO',
   'CANCELADO'
 );
 
@@ -33,13 +33,13 @@ CREATE TABLE "gamux_project_page_info" (
 
 CREATE TABLE "gamux_project" (
   "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  "name" varchar UNIQUE NOT NULL,
+  "name" varchar NOT NULL,
+  "slug" varchar unique NOT NULL,
   "logo" varchar,
   "description" text,
   "tags" varchar[],
-  "team_leader" uuid NOT NULL REFERENCES "users" ("id"),
   "page_info" uuid REFERENCES "gamux_project_page_info" ("id") ON DELETE SET NULL,
-  "status" project_status DEFAULT 'EM PROGRESSO',
+  "status" project_status DEFAULT 'EM_PROGRESSO',
   "genres" varchar[],
   "type" project_type DEFAULT 'JOGO',
   "created_at" timestamptz DEFAULT now(),

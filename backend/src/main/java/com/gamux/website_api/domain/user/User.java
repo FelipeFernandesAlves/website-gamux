@@ -2,7 +2,7 @@ package com.gamux.website_api.domain.user;
 
 import java.util.UUID;
 
-import com.gamux.website_api.domain.user.dto.RegisterUserDTO;
+import com.gamux.website_api.domain.user.dto.UserRequestDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,12 +25,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "users")
 public class User {
-    public User(RegisterUserDTO data) {
-        this.username = data.username();
-        this.name = data.name();
-        this.email = data.email();
-    }
-
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     
@@ -44,4 +38,10 @@ public class User {
     private String email;
 
     private String avatar;
+
+    public User(UserRequestDTO data) {
+        this.username = data.username();
+        this.name = data.name();
+        this.email = data.email();
+    }
 }

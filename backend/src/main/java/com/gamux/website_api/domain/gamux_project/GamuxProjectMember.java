@@ -47,6 +47,13 @@ public class GamuxProjectMember {
 
     @Column(name = "joined_at", insertable = false, updatable = false)
     private OffsetDateTime joinedAt;
+
+    public GamuxProjectMember(User user, GamuxProject project, String role) {
+        this.id = new ProjectMemberId(project.getId(), user.getId());
+        this.user = user;
+        this.project = project;
+        this.role = role;
+    }
 }
 
 @NoArgsConstructor

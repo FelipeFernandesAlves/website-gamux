@@ -6,27 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.gamux.website_api.domain.user.User;
-import com.gamux.website_api.domain.user.dto.RegisterUserDTO;
+import com.gamux.website_api.domain.user.dto.UserRequestDTO;
 import com.gamux.website_api.domain.user.dto.UserResponseDTO;
 import com.gamux.website_api.repository.user.UserRepository;
-import com.gamux.website_api.service.ImageService;
+import com.gamux.website_api.service.UserService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    private ImageService imageService;
+    private UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
@@ -38,19 +36,13 @@ public class UserController {
     }
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestPart("data") RegisterUserDTO data, @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
-        User user = new User(data);
-
+    public ResponseEntity<UserResponseDTO> registerUser(@ModelAttribute UserRequestDTO data) {
         try {
-            if (avatar != null && !avatar.isEmpty()) {
-                String imgUrl = imageService.uploadImage(avatar);
-                user.setAvatar(imgUrl);
-            }
+            UserResponseDTO res = userService.registerUser(data);
+            return ResponseEntity.ok(res);
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().build();
         }
-        
-        userRepository.save(user);
-        return ResponseEntity.ok(new UserResponseDTO(user));
     }
 }

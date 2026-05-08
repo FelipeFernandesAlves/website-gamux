@@ -58,6 +58,14 @@ public class ImageService {
         } catch (Exception e) {
             throw new Exception("Failed to retrieve file", e);
         }
+    }
 
+    public void deleteImage(String imgName) throws Exception {
+        try {
+            Path filepath = storagePath.resolve(imgName).normalize();
+            Files.deleteIfExists(filepath);
+        } catch (IOException e) {
+            throw new Exception("Failed to delete file", e);
+        }
     }
 }
