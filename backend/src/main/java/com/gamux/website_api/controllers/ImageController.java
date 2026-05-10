@@ -1,4 +1,4 @@
-package com.gamux.website_api.controller;
+package com.gamux.website_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gamux.website_api.service.ImageService;
+import com.gamux.website_api.services.ImageService;
 
 @RestController
 @RequestMapping("/img")

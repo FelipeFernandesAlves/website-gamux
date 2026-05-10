@@ -1,19 +1,22 @@
 package com.gamux.website_api.services;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gamux.website_api.domain.user.User;
-import com.gamux.website_api.domain.user.dto.UserRequestDTO;
+import com.gamux.website_api.domain.user.dto.RegisterRequestDTO;
 import com.gamux.website_api.domain.user.dto.UserResponseDTO;
+import com.gamux.website_api.domain.user.enums.UserRole;
 import com.gamux.website_api.repositories.user.UserRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
-    
     
     @Autowired
     private ImageService imageService;
@@ -25,9 +28,11 @@ public class UserService {
     private SlugifyService slugifyService;
 
     @Transactional(rollbackOn = Exception.class)
-    public UserResponseDTO registerUser(UserRequestDTO data) throws Exception {
-        User user = new User(data);
+    public UserResponseDTO registerUser(RegisterRequestDTO data, String role) throws Exception {
+        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+        User user = new User(data, encryptedPassword);
         user.setUsername(slugifyService.toSlug(user.getUsername()));
+        user.setRole(UserRole.valueOf(role));
 
         MultipartFile avatar = data.avatar();
         try {
@@ -40,6 +45,14 @@ public class UserService {
         }
         
         return new UserResponseDTO(userRepository.save(user));
+    }
+
+    public void deleteUser(UUID id) throws Exception {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) throw new Exception("[DELETE USER] - Usuário não encotrado");
+
+        imageService.deleteImage(user.getAvatar());
+        userRepository.delete(user);
     }
 
 }

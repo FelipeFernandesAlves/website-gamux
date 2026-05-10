@@ -1,4 +1,4 @@
-package com.gamux.website_api.controller;
+package com.gamux.website_api.controllers;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +19,9 @@ import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectUpdateRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectUpdateResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.TeamMemberResponseDTO;
-import com.gamux.website_api.repository.gamux_project.GamuxProjectMemberRepository;
-import com.gamux.website_api.repository.gamux_project.GamuxProjectRepository;
-import com.gamux.website_api.service.GamuxProjectService;
+import com.gamux.website_api.repositories.gamux_project.GamuxProjectMemberRepository;
+import com.gamux.website_api.repositories.gamux_project.GamuxProjectRepository;
+import com.gamux.website_api.services.GamuxProjectService;
 
 @Controller
 @RequestMapping("/projects")

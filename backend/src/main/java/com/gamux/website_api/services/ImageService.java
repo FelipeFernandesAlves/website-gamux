@@ -62,6 +62,7 @@ public class ImageService {
 
     public void deleteImage(String imgName) throws Exception {
         try {
+            if (imgName == null) return;
             Path filepath = storagePath.resolve(imgName).normalize();
             Files.deleteIfExists(filepath);
         } catch (IOException e) {

@@ -1,20 +1,19 @@
-package com.gamux.website_api.controller;
+package com.gamux.website_api.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gamux.website_api.domain.user.dto.UserRequestDTO;
 import com.gamux.website_api.domain.user.dto.UserResponseDTO;
-import com.gamux.website_api.repository.user.UserRepository;
-import com.gamux.website_api.service.UserService;
+import com.gamux.website_api.repositories.user.UserRepository;
+import com.gamux.website_api.services.UserService;
 
 @RestController
 @RequestMapping("/users")
@@ -35,11 +34,11 @@ public class UserController {
         );
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDTO> registerUser(@ModelAttribute UserRequestDTO data) {
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteUser(@RequestParam UUID id) {
         try {
-            UserResponseDTO res = userService.registerUser(data);
-            return ResponseEntity.ok(res);
+            userService.deleteUser(id);
+            return ResponseEntity.ok("Usuário deletado com sucesso.");
         } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.badRequest().build();

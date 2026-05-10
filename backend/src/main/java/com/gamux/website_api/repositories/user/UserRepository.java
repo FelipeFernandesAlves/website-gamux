@@ -11,6 +11,6 @@ import com.gamux.website_api.domain.user.User;
 public interface UserRepository extends JpaRepository<User, UUID> {
     public User findByUsername(String username);
 
-    @Query("select u from users where u.username = ?1")
-    public UserDetails findByLogin(String login);
+    @Query("SELECT u FROM User u WHERE u.username = ?1")
+    public UserDetails findByLogin(String username);
 }

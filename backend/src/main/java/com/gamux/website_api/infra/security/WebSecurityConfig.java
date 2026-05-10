@@ -1,5 +1,6 @@
 package com.gamux.website_api.infra.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,10 +12,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
+    @Autowired
+    private SecurityFilter securityFilter;
+
     @Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
@@ -24,6 +30,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/projects").hasRole("STAFF")
                 .anyRequest().permitAll()
             )
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable());
         return http.build();
@@ -34,6 +41,7 @@ public class WebSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
