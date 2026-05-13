@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectResponseDTO;
-import com.gamux.website_api.domain.gamux_project.dto.TeamMemberResponseDTO;
+import com.gamux.website_api.domain.gamux_project.dto.ProjectMemberResponseDTO;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectMemberRepository;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectRepository;
 import com.gamux.website_api.services.GamuxProjectService;
@@ -33,8 +33,8 @@ public class GamuxProjectPublicController {
     public ResponseEntity<List<GamuxProjectResponseDTO>> getProjects() {
         List<GamuxProjectResponseDTO> projects = gamuxProjectRepository.findAll().stream()
             .map(project -> {
-                List<TeamMemberResponseDTO> teamMembers = gamuxProjectMemberRepository.findByProjectId(project.getId()).stream()
-                    .map(TeamMemberResponseDTO::new)
+                List<ProjectMemberResponseDTO> teamMembers = gamuxProjectMemberRepository.findByProjectId(project.getId()).stream()
+                    .map(ProjectMemberResponseDTO::new)
                     .toList();
                 return new GamuxProjectResponseDTO(project, teamMembers);
             })

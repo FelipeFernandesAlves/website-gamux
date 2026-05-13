@@ -19,12 +19,12 @@ public record GamuxProjectResponseDTO(
     ProjectStatus status,
     ProjectType type,
     int likes,
-    List<TeamMemberResponseDTO> teamMembers,
+    List<ProjectMemberResponseDTO> teamMembers,
     Date createdAt,
     Date lastUpdated
 ) {
 
-    public GamuxProjectResponseDTO(GamuxProject project, List<TeamMemberResponseDTO> teamMembers) {
+    public GamuxProjectResponseDTO(GamuxProject project, List<ProjectMemberResponseDTO> teamMembers) {
         this(
             project.getId(),
             project.getName(),

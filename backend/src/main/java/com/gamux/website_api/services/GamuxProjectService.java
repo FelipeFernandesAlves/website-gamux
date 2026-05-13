@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.gamux.website_api.domain.gamux_project.GamuxProject;
 import com.gamux.website_api.domain.gamux_project.GamuxProjectMember;
+import com.gamux.website_api.domain.gamux_project.dto.AddMemberRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectUpdateRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectUpdateResponseDTO;
-import com.gamux.website_api.domain.gamux_project.dto.TeamMemberResponseDTO;
+import com.gamux.website_api.domain.gamux_project.dto.ProjectMemberRequestDTO;
+import com.gamux.website_api.domain.gamux_project.dto.ProjectMemberResponseDTO;
 import com.gamux.website_api.domain.user.User;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectMemberRepository;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectRepository;
@@ -61,7 +63,7 @@ public class GamuxProjectService {
         );
 
         List<GamuxProjectMember> savedMembers = gamuxProjectMemberRepository.saveAllAndFlush(members);
-        return new GamuxProjectResponseDTO(savedProject, savedMembers.stream().map(TeamMemberResponseDTO::new).toList());
+        return new GamuxProjectResponseDTO(savedProject, savedMembers.stream().map(ProjectMemberResponseDTO::new).toList());
     }
 
     public void deleteProject(UUID projectId) throws Exception {
@@ -99,8 +101,8 @@ public class GamuxProjectService {
     @Transactional(rollbackOn = Exception.class)
     public GamuxProjectResponseDTO getById(UUID id) throws Exception {
         GamuxProject project = gamuxProjectRepository.findById(id).orElse(null);
-        List<TeamMemberResponseDTO> members = gamuxProjectMemberRepository.findByProjectId(id).stream()
-            .map(TeamMemberResponseDTO::new)
+        List<ProjectMemberResponseDTO> members = gamuxProjectMemberRepository.findByProjectId(id).stream()
+            .map(ProjectMemberResponseDTO::new)
             .toList();
         
         if (project == null) {
@@ -108,5 +110,34 @@ public class GamuxProjectService {
         }
 
         return new GamuxProjectResponseDTO(project, members);
+    }
+
+    public ProjectMemberResponseDTO addProjectMember(AddMemberRequestDTO data) throws Exception {
+        GamuxProject project = gamuxProjectRepository.findById(data.projectId()).orElse(null);
+        User user = userRepository.findByUsername(data.username());
+
+        if (project == null || user == null)
+            throw new Exception("[ERRO] addMember: Falha ao encontrar projeto ou usuário");
+
+        boolean alreadyInProject = gamuxProjectMemberRepository.findByUserId(user.getId()).orElse(null) != null;
+        if (alreadyInProject)
+            throw new Exception("[ERRO] addMember: Usuário já é um membro no projeto " + project.getName());
+
+        GamuxProjectMember newMember = new GamuxProjectMember(user, project, data.role().toString());
+        return new ProjectMemberResponseDTO(gamuxProjectMemberRepository.save(newMember));
+    }
+
+    public ProjectMemberResponseDTO updateProjectMember(AddMemberRequestDTO data) throws Exception {
+        GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(data.projectId(), data.username()).orElse(null);
+        if (member == null) throw new Exception("[ERRO] updateMember: Falha ao encontrar membro.");
+
+        member.setRole(data.role().toString());
+        gamuxProjectMemberRepository.save(member);
+        return new ProjectMemberResponseDTO(member);
+    }
+
+    public void deleteProjectMember(ProjectMemberRequestDTO data) {
+        GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(data.projectId(), data.username()).orElse(null);
+        gamuxProjectMemberRepository.delete(member);
     }
 }
