@@ -1,8 +1,8 @@
 package com.gamux.website_api.controllers.user;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +19,10 @@ public class UserPublicController {
     private UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsers(Pageable pageable) {
         return ResponseEntity.ok(
-            userRepository.findAll().stream()
+            userRepository.findAll(pageable)
                 .map(UserResponseDTO::new)
-                .toList()
         );
     }
 }

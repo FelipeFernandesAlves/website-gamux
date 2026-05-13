@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,15 +32,14 @@ public class GamuxProjectPublicController {
     private GamuxProjectService gamuxProjectService;
 
     @GetMapping
-    public ResponseEntity<List<GamuxProjectResponseDTO>> getProjects() {
-        List<GamuxProjectResponseDTO> projects = gamuxProjectRepository.findAll().stream()
+    public ResponseEntity<Page<GamuxProjectResponseDTO>> getProjects(Pageable pageable) {
+        Page<GamuxProjectResponseDTO> projects = gamuxProjectRepository.findAll(pageable)
             .map(project -> {
                 List<ProjectMemberResponseDTO> teamMembers = gamuxProjectMemberRepository.findByProjectId(project.getId()).stream()
                     .map(ProjectMemberResponseDTO::new)
                     .toList();
                 return new GamuxProjectResponseDTO(project, teamMembers);
-            })
-            .toList();
+            });
         return ResponseEntity.ok(projects);
     }
 
