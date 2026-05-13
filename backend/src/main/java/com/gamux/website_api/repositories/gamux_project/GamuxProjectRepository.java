@@ -9,5 +9,4 @@ import com.gamux.website_api.domain.gamux_project.GamuxProject;
 
 public interface GamuxProjectRepository extends JpaRepository<GamuxProject, UUID> {
     Optional<GamuxProject> findBySlug(String projectSlug);
-    
 }
