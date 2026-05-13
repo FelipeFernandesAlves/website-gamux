@@ -6,11 +6,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.sksamuel.scrimage.ImmutableImage;
+import com.sksamuel.scrimage.nio.AnimatedGifReader;
+import com.sksamuel.scrimage.nio.ImageSource;
+import com.sksamuel.scrimage.webp.Gif2WebpWriter;
+import com.sksamuel.scrimage.webp.WebpWriter;
 
 @Service
 public class ImageService {
@@ -32,17 +39,20 @@ public class ImageService {
             throw new Exception("Only image files are allowed (jpg, jpeg, png, gif)");
         }
 
-        String storageName = UUID.randomUUID() + "-" + Paths.get(name).getFileName().toString();
+        String storageName = UUID.randomUUID().toString() + ".webp";
         Path targetPath = storagePath.resolve(storageName).normalize();
-        if (!targetPath.startsWith(storagePath)) {
-            throw new Exception("Invalid file path");
-        }
 
         try (InputStream inputStream = file.getInputStream()) {
-            java.nio.file.Files.copy(inputStream, targetPath);
+            if (name.toLowerCase().endsWith(".gif")) {
+                AnimatedGifReader.read(ImageSource.of(inputStream))
+                    .output(Gif2WebpWriter.DEFAULT.withLossy(), targetPath);
+            } else {
+                ImmutableImage.loader().fromStream(inputStream)
+                    .output(WebpWriter.DEFAULT.withMultiThread().withQ(85).withM(6), targetPath);
+            }
             return storageName;
         } catch (IOException e) {
-            throw new Exception("Failed to store file", e);
+            throw new Exception("Failed to store file: " + e.getMessage(), e);
         }
     }
 

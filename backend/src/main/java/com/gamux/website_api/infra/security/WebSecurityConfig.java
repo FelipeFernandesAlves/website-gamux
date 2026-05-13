@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/private/projects").access(projectAuthManager)
                 .requestMatchers("/private/users").hasRole("STAFF")
                 .requestMatchers("/public/*").permitAll()
+                .requestMatchers("/img/*").permitAll()
                 .requestMatchers("/auth/*").permitAll()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

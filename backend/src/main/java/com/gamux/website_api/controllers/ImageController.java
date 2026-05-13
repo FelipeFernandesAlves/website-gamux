@@ -25,15 +25,15 @@ public class ImageController {
         try {
             Resource file = imageService.getImage(imgName);
             ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-                    .filename(file.getFilename())
-                    .build();
+                .filename(file.getFilename())
+                .build();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(contentDisposition);
-            headers.setContentType(MediaType.IMAGE_GIF);
+            headers.setContentType(MediaType.parseMediaType("image/webp"));
 
             return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(file);
+                .headers(headers)
+                .body(file);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
