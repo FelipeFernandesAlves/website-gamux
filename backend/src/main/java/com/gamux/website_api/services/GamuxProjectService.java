@@ -51,14 +51,22 @@ public class GamuxProjectService {
         savedProject.setLogo(logoUrl);
         gamuxProjectRepository.save(savedProject);
 
-        User teamLeader = userRepository.findByUsername(data.teamLeaderUsername());
+        User teamLeader = userRepository.findByUsername(data.teamLeaderUsername()).orElse(null);
+        if (teamLeader == null)
+            throw new Exception("team leader doesn't exists.");
+
         List<GamuxProjectMember> members = new ArrayList<GamuxProjectMember>();
         members.add(new GamuxProjectMember(teamLeader, savedProject, "LEADER"));
+
         members.addAll(data.teamMembersUsernames().stream()
             .map((String username) -> {
-                User member = userRepository.findByUsername(username);
-                return new GamuxProjectMember(member, savedProject, "MEMBER");
+                User member = userRepository.findByUsername(username).orElse(null);
+                if (member != null)
+                    return new GamuxProjectMember(member, savedProject, "MEMBER");
+                
+                return null;
             })
+            .filter(member -> member != null)
             .toList()
         );
 
@@ -112,9 +120,9 @@ public class GamuxProjectService {
         return new GamuxProjectResponseDTO(project, members);
     }
 
-    public ProjectMemberResponseDTO addProjectMember(AddMemberRequestDTO data) throws Exception {
-        GamuxProject project = gamuxProjectRepository.findById(data.projectId()).orElse(null);
-        User user = userRepository.findByUsername(data.username());
+    public ProjectMemberResponseDTO addProjectMember(AddMemberRequestDTO data, UUID projectId) throws Exception {
+        GamuxProject project = gamuxProjectRepository.findById(projectId).orElse(null);
+        User user = userRepository.findByUsername(data.username()).orElse(null);
 
         if (project == null || user == null)
             throw new Exception("[ERRO] addMember: Falha ao encontrar projeto ou usuário");
@@ -127,8 +135,8 @@ public class GamuxProjectService {
         return new ProjectMemberResponseDTO(gamuxProjectMemberRepository.save(newMember));
     }
 
-    public ProjectMemberResponseDTO updateProjectMember(AddMemberRequestDTO data) throws Exception {
-        GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(data.projectId(), data.username()).orElse(null);
+    public ProjectMemberResponseDTO updateProjectMember(AddMemberRequestDTO data, UUID projectId) throws Exception {
+        GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(projectId, data.username()).orElse(null);
         if (member == null) throw new Exception("[ERRO] updateMember: Falha ao encontrar membro.");
 
         member.setRole(data.role().toString());
@@ -136,8 +144,8 @@ public class GamuxProjectService {
         return new ProjectMemberResponseDTO(member);
     }
 
-    public void deleteProjectMember(ProjectMemberRequestDTO data) {
-        GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(data.projectId(), data.username()).orElse(null);
+    public void deleteProjectMember(ProjectMemberRequestDTO data, UUID projectId) {
+        GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(projectId, data.username()).orElse(null);
         gamuxProjectMemberRepository.delete(member);
     }
 }

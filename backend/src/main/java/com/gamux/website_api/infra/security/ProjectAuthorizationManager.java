@@ -23,17 +23,22 @@ public class ProjectAuthorizationManager implements AuthorizationManager<Request
 
     @Override
     public @Nullable AuthorizationResult authorize(Supplier<? extends @Nullable Authentication> authentication, RequestAuthorizationContext context) {
-        String idStr = context.getRequest().getParameter("id");
         Authentication auth = authentication.get();
-
-        if (auth == null || !auth.isAuthenticated() || idStr == null)
+        if (auth == null || !auth.isAuthenticated()) {
             return new AuthorizationDecision(false);
+        }
         
         boolean isGlobalAdmin = auth.getAuthorities().stream()
-            .anyMatch(a -> a.getAuthority().equals("ROLE_STAFF"));
+            .anyMatch(a -> {
+                return a.getAuthority().equals("ROLE_STAFF");
+            });
 
         if (isGlobalAdmin)
             return new AuthorizationDecision(true);
+
+        String idStr = context.getRequest().getHeader("projectId");
+        if (idStr == null) 
+            return new AuthorizationDecision(false);
 
         UUID projectId = UUID.fromString(idStr);
         String username = auth.getName();

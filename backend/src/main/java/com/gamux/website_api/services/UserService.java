@@ -1,7 +1,5 @@
 package com.gamux.website_api.services;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,8 +45,8 @@ public class UserService {
         return new UserResponseDTO(userRepository.save(user));
     }
 
-    public void deleteUser(UUID id) throws Exception {
-        User user = userRepository.findById(id).orElse(null);
+    public void deleteUser(String username) throws Exception {
+        User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) throw new Exception("[DELETE USER] - Usuário não encotrado");
 
         imageService.deleteImage(user.getAvatar());

@@ -27,17 +27,20 @@ public class WebSecurityConfig {
     @Autowired
     private ProjectAuthorizationManager projectAuthManager;
 
+    @Autowired
+    private UserAuthorizationManager userAuthorizationManager;
+
     @Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
             .csrf(crsf -> crsf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/private/projects").access(projectAuthManager)
-                .requestMatchers("/private/users").hasRole("STAFF")
-                .requestMatchers("/public/*").permitAll()
-                .requestMatchers("/img/*").permitAll()
-                .requestMatchers("/auth/*").permitAll()
+                .requestMatchers("/private/projects/**").access(projectAuthManager)
+                .requestMatchers("/private/users/**").access(userAuthorizationManager)
+                .requestMatchers("/public/**").permitAll()
+                .requestMatchers("/img/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin(form -> form.disable())

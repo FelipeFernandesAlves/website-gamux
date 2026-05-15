@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gamux.website_api.domain.gamux_project.dto.AddMemberRequestDTO;
@@ -42,7 +42,7 @@ public class GamuxProjectPrivateController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteProject(@RequestParam UUID id) {
+    public ResponseEntity<String> deleteProject(@RequestHeader UUID id) {
         try {
             gamuxProjectService.deleteProject(id);
             return ResponseEntity.ok("Projecto deletado com sucesso.");
@@ -52,7 +52,7 @@ public class GamuxProjectPrivateController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<GamuxProjectUpdateResponseDTO> updateProject(@ModelAttribute GamuxProjectUpdateRequestDTO data, @RequestParam UUID id) {
+    public ResponseEntity<GamuxProjectUpdateResponseDTO> updateProject(@ModelAttribute GamuxProjectUpdateRequestDTO data, @RequestHeader UUID id) {
         try {
             GamuxProjectUpdateResponseDTO response = gamuxProjectService.updateProject(data, id);
             return ResponseEntity.ok(response);
@@ -63,9 +63,9 @@ public class GamuxProjectPrivateController {
     }
 
     @PostMapping("/member/add")
-    public ResponseEntity<ProjectMemberResponseDTO> addProjectMember(@RequestBody AddMemberRequestDTO data) {
+    public ResponseEntity<ProjectMemberResponseDTO> addProjectMember(@RequestBody AddMemberRequestDTO data, @RequestHeader UUID id) {
         try {
-            ProjectMemberResponseDTO response = gamuxProjectService.addProjectMember(data);
+            ProjectMemberResponseDTO response = gamuxProjectService.addProjectMember(data, id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e);
@@ -74,9 +74,9 @@ public class GamuxProjectPrivateController {
     }
 
     @PatchMapping("/member/update")
-    public ResponseEntity<ProjectMemberResponseDTO> updateProjectMember(@RequestBody AddMemberRequestDTO data) {
+    public ResponseEntity<ProjectMemberResponseDTO> updateProjectMember(@RequestBody AddMemberRequestDTO data, @RequestHeader UUID id) {
         try {
-            ProjectMemberResponseDTO response = gamuxProjectService.updateProjectMember(data);
+            ProjectMemberResponseDTO response = gamuxProjectService.updateProjectMember(data, id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e);
@@ -85,9 +85,9 @@ public class GamuxProjectPrivateController {
     }
 
     @DeleteMapping("/member/delete")
-    public ResponseEntity<String> deleteProjectMember(@RequestBody ProjectMemberRequestDTO data) {
+    public ResponseEntity<String> deleteProjectMember(@RequestBody ProjectMemberRequestDTO data, @RequestHeader UUID id) {
         try {
-            gamuxProjectService.deleteProjectMember(data);
+            gamuxProjectService.deleteProjectMember(data, id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             System.out.println(e);
