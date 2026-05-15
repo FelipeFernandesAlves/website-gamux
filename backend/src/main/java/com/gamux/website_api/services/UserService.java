@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.gamux.website_api.domain.user.User;
 import com.gamux.website_api.domain.user.dto.RegisterRequestDTO;
+import com.gamux.website_api.domain.user.dto.UpdateUserRequestDTO;
 import com.gamux.website_api.domain.user.dto.UserResponseDTO;
 import com.gamux.website_api.domain.user.enums.UserRole;
 import com.gamux.website_api.repositories.user.UserRepository;
@@ -45,6 +46,26 @@ public class UserService {
         return new UserResponseDTO(userRepository.save(user));
     }
 
+    public UserResponseDTO updateUser(UpdateUserRequestDTO data, String username) throws Exception {
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null)
+            throw new Exception("[UPDATE USER] - Usuário não encontrado.");
+
+        user.update(data);
+        if (!data.removeAvatar()) {
+            if (data.avatar() != null) {
+                String avatarUrl = imageService.uploadImage(data.avatar());
+                imageService.deleteImage(user.getAvatar());
+                user.setAvatar(avatarUrl);
+            }
+        } else {
+            imageService.deleteImage(user.getAvatar());
+            user.setAvatar(null);
+        } 
+
+        return new UserResponseDTO(userRepository.save(user));
+    }
+
     public void deleteUser(String username) throws Exception {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) throw new Exception("[DELETE USER] - Usuário não encotrado");
@@ -52,5 +73,4 @@ public class UserService {
         imageService.deleteImage(user.getAvatar());
         userRepository.delete(user);
     }
-
 }

@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.gamux.website_api.domain.user.dto.RegisterRequestDTO;
+import com.gamux.website_api.domain.user.dto.UpdateUserRequestDTO;
 import com.gamux.website_api.domain.user.enums.UserRole;
 
 import jakarta.persistence.Entity;
@@ -72,6 +73,12 @@ public class User implements UserDetails {
             default:
                 return List.of(new SimpleGrantedAuthority("ROLE_USER"));
         }
+    }
+
+    public void update(UpdateUserRequestDTO data) {
+        if (data.username() != null) this.username = data.username();
+        if (data.email() != null) this.email = data.email();
+        if (data.name() != null) this.name = data.name();
     }
 
 }
