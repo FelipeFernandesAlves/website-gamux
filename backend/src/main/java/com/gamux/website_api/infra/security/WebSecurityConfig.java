@@ -34,6 +34,7 @@ public class WebSecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
             .csrf(crsf -> crsf.disable())
+            .cors(cors -> cors.disable()) // TODO configure cors to prod.
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/private/projects/**").access(projectAuthManager)
