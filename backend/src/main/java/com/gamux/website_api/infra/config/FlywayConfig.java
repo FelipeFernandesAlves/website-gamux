@@ -1,4 +1,4 @@
-package com.gamux.website_api.config;
+package com.gamux.website_api.infra.config;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
