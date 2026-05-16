@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +28,8 @@ public class UserPublicController {
         );
     }
 
-    @GetMapping ResponseEntity<UserResponseDTO> getUser(@RequestHeader String username) {
+    @GetMapping({"/{username}"})
+    ResponseEntity<UserResponseDTO> getUser(@PathVariable String username) {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null)
             return ResponseEntity.badRequest().build();

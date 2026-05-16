@@ -103,6 +103,9 @@ public class GamuxProjectService {
         }
 
         project.update(data);
+        if (data.name() != null)
+            project.setSlug(slugifyService.toSlug(project.getName()));
+        
         return new GamuxProjectUpdateResponseDTO(project);
     }
 

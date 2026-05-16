@@ -20,13 +20,13 @@ public class UserPrivateController {
     @Autowired
     private UserService userService;
 
-    @PatchMapping
+    @PatchMapping("/update")
     public ResponseEntity<UserResponseDTO> updateUser(@ModelAttribute UpdateUserRequestDTO data, @RequestHeader String username) {
         try {
             UserResponseDTO res = userService.updateUser(data, username);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -37,7 +37,7 @@ public class UserPrivateController {
             userService.deleteUser(username);
             return ResponseEntity.ok("Usuário deletado com sucesso.");
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

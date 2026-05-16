@@ -46,12 +46,12 @@ public class UserService {
         return new UserResponseDTO(userRepository.save(user));
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public UserResponseDTO updateUser(UpdateUserRequestDTO data, String username) throws Exception {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null)
             throw new Exception("[UPDATE USER] - Usuário não encontrado.");
 
-        user.update(data);
         if (!data.removeAvatar()) {
             if (data.avatar() != null) {
                 String avatarUrl = imageService.uploadImage(data.avatar());
@@ -62,6 +62,10 @@ public class UserService {
             imageService.deleteImage(user.getAvatar());
             user.setAvatar(null);
         } 
+
+        user.update(data);
+        if (data.username() != null)
+            user.setUsername(slugifyService.toSlug(data.username()));
 
         return new UserResponseDTO(userRepository.save(user));
     }
