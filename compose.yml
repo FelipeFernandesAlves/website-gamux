@@ -41,6 +41,8 @@ services:
     image: gamux/api-gamux:latest
     container_name: backend_service
     restart: always
+    volumes:
+      - image-data:/app/uploads/images
     env_file:
       - .env.prod
     ports:
@@ -71,3 +73,4 @@ networks:
 
 volumes:
   pgdata:
+  image-data:
