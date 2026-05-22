@@ -6,5 +6,5 @@ import type { GamuxProjectData } from "../types/GamuxProjectData"
 
 export const fetchProjectDetails = async ({ queryKey }: QueryFunctionContext<readonly [string, string]>): AxiosPromise<GamuxProjectData> => {
     const [_key, id] = queryKey
-    return await api.get(`/public/projects/${id}/teste`)   
+    return await api.get(`/public/projects/${id}`)   
 }

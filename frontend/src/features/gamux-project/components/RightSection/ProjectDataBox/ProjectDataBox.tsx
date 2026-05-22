@@ -7,11 +7,11 @@ interface ProjectDataBoxProps {
 
 export function ProjectDataBox({ project }: ProjectDataBoxProps) {
     const headingCn = "text-(--h) text-right capitalize"
-    const infoCn = "text-(--text) h-full flex items-center flex-wrap gap-x-2 font-medium"
+    const infoCn = "text-(--text) h-full flex items-center flex-wrap gap-x-2 font-medium capitalize"
 
     const data = {
-        "tipo": project.type,
-        "status": project.status,
+        "tipo": project.type.toLocaleLowerCase(),
+        "status": project.status.toLocaleLowerCase().replace("_", " "),
         "equipe": project.teamMembers.map((member) => { return (<a href="#" className="text-(--link)">{member.name}</a>) }),
         "tags": project.tags.join(", "),
         "gêneros": project.genres.join(", ")

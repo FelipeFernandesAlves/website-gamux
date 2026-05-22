@@ -12,6 +12,16 @@ interface ProjectCommentWrapperProps {
 
 export function ProjectCommentWrapper({ project }: ProjectCommentWrapperProps) {
     const { comments } = getCommentWrapperData(project)
+    let commentBox = <></>
+
+    if (comments.length > 0)
+        commentBox = (
+            <div className="flex flex-col gap-4">
+                {
+                    comments.map((comment, index) => <CommentCard key={index} comment={comment} />)
+                }
+            </div>
+        )
 
     return (
         <div className="flex flex-col gap-3.5">
@@ -20,12 +30,7 @@ export function ProjectCommentWrapper({ project }: ProjectCommentWrapperProps) {
                 <Input className="w-[70%] max-md:w-full" placeholder="Escreva um Comentário legal!" />
                 <Button className="w-fit px-4">Enviar</Button>
             </form>
-
-            <div className="flex flex-col gap-4">
-                {
-                    comments.map((comment, index) => <CommentCard key={index} comment={comment} />)
-                }
-            </div>
+            {commentBox}
         </div>
     )
 }

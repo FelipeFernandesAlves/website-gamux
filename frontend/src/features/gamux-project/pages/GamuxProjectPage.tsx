@@ -13,16 +13,16 @@ interface GamuxProjectPageProps {
 function GamuxProjectPage({}: GamuxProjectPageProps) {
     const { projectId } = useParams<{projectId: string}>()
     const { project, projectUpdates, pageInfo } = useGamuxProjectPage(projectId)
-
+    
     if (!project || !pageInfo)
         return
 
     const theme = {
-        '--bg': pageInfo.bg_color,
-        '--bg2': pageInfo.bg2_color,
-        '--h': pageInfo.heading_color,
-        '--link': pageInfo.link_color,
-        '--text': pageInfo.text_color
+        '--bg': pageInfo.bgColor,
+        '--bg2': pageInfo.bg2Color,
+        '--h': pageInfo.headingColor,
+        '--link': pageInfo.linkColor,
+        '--text': pageInfo.textColor
     }
 
     return (
