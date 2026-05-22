@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectPageResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.ProjectMemberResponseDTO;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectMemberRepository;
@@ -43,13 +44,24 @@ public class GamuxProjectPublicController {
         return ResponseEntity.ok(projects);
     }
 
-    @GetMapping({"/{id}/{slug}", "/{id}"})
-    public ResponseEntity<GamuxProjectResponseDTO> getProject(@PathVariable("id") UUID id, @PathVariable(name = "slug", required = false) String slug) {
+    @GetMapping("/{id}")
+    public ResponseEntity<GamuxProjectResponseDTO> getProject(@PathVariable("id") UUID id) {
         try {
             GamuxProjectResponseDTO response = gamuxProjectService.getById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/page/{id}")
+    public ResponseEntity<GamuxProjectPageResponseDTO> getProjectPageInfo(@PathVariable("id") UUID projectId) {
+        try {
+            GamuxProjectPageResponseDTO response = gamuxProjectService.getPageInfoByProjectId(projectId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
