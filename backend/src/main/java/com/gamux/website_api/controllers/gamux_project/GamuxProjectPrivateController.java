@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gamux.website_api.domain.gamux_project.dto.AddMemberRequestDTO;
+import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectPageResponseDTO;
+import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectPageUpdateRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectUpdateRequestDTO;
@@ -89,6 +91,17 @@ public class GamuxProjectPrivateController {
         try {
             gamuxProjectService.deleteProjectMember(data, id);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("/page/update")
+    public ResponseEntity<GamuxProjectPageResponseDTO> updateProjectPage(@ModelAttribute GamuxProjectPageUpdateRequestDTO data, @RequestHeader UUID id) {
+        try {
+            GamuxProjectPageResponseDTO response = gamuxProjectService.udpdateProjectPage(data, id);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.badRequest().build();
