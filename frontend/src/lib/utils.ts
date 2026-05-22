@@ -13,3 +13,7 @@ export function cn(...inputs: ClassValue[]): string {
 export function formatStringName(name: string): string {
   return name.toLowerCase().replace(/\s+/g, '-');
 }
+
+export function formatDatetime(datetime: string) {
+  return datetime
+}

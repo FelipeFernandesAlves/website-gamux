@@ -3,6 +3,7 @@ import type GamuxEvent from "../../../../shared/classes/gamux-event/GamuxEvent"
 import { H3, H4, H5 } from "../../../../shared/components/typography/Heading"
 import { BlankButton } from "../../../../shared/components/Button"
 import Card from "../Card"
+import type { MouseEvent } from "react"
 
 interface GamuxInterfacePreviewProps {
     gamuxEvent: GamuxEvent
@@ -12,7 +13,7 @@ function GamuxEventCard({ gamuxEvent }: GamuxInterfacePreviewProps) {
     let registerButton = <></>
     if (gamuxEvent.registerLink) {
         // Set a timeout in mobile to animate
-        function onRegisterButtonClick(event: React.MouseEvent<HTMLAnchorElement>) {
+        function onRegisterButtonClick(event: MouseEvent<HTMLButtonElement>) {
             if (!window.matchMedia("(max-width: 48rem)").matches)
                 return
             
@@ -24,21 +25,21 @@ function GamuxEventCard({ gamuxEvent }: GamuxInterfacePreviewProps) {
         }
 
         registerButton = (
-            <a href={`${gamuxEvent.registerLink}`} onClick={onRegisterButtonClick}>
-                <BlankButton className="w-40 h-10 py-1 flex justify-center items-center bg-primary text-secondary overflow-hidden hover:scale-[1]">
-                    <div className="w-8 flex justify-center items-center overflow-hidden transition-all duration-300 group-hover:w-full">
-                        <TicketIcon className="w-6 fill-secondary" />
-                    </div>
-                    <H4 className="flex justify-center items-center transition-all duration-300 w-21 group-hover:w-0 group-hover:text-[0px]">Participar</H4>
-                </BlankButton>
-            </a>
+            // <a href={`${gamuxEvent.registerLink}`} onClick={onRegisterButtonClick}>
+            <BlankButton onClick={onRegisterButtonClick} className="w-40 h-10 py-1 flex justify-center items-center bg-primary text-secondary overflow-hidden hover:scale-[1]">
+                <div className="w-8 flex justify-center items-center overflow-hidden transition-all duration-300 group-hover:w-full">
+                    <TicketIcon className="w-6 fill-secondary" />
+                </div>
+                <H4 className="flex justify-center items-center transition-all duration-300 w-21 group-hover:w-0 group-hover:text-[0px]">Participar</H4>
+            </BlankButton>
+            // </a>
         )
     }
 
     let location = <span>{gamuxEvent.location}</span>
-    if (gamuxEvent.locationLink) {
-        location = <a target="_blank" href={`${gamuxEvent.locationLink}`} className="underline">{gamuxEvent.location}</a>
-    }
+    // if (gamuxEvent.locationLink) {
+        // location = <a target="_blank" href={`${gamuxEvent.locationLink}`} className="underline"></a>
+    // }
 
     return(
         <Card imgSrc={gamuxEvent.banner} imgAlt={`banner-${gamuxEvent.name}`}>
