@@ -1,4 +1,4 @@
-export default interface GamuxProjectPageData {
+export interface GamuxProjectPageData {
     description?: string
     banner?: string
     externalLinks?: Record<string, string>

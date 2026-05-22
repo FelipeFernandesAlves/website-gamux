@@ -3,7 +3,7 @@ import ProjectHeader from "../components/ProjectHeader"
 import { LeftSection } from "../components/LeftSection"
 import { RightSection } from "../components/RightSection"
 import { formatStringName } from "@lib/utils"
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { useGamuxProjectPage } from "../hooks/useGamuxProjectPage"
 
 interface GamuxProjectPageProps {
@@ -11,11 +11,14 @@ interface GamuxProjectPageProps {
 }
 
 function GamuxProjectPage({}: GamuxProjectPageProps) {
-    const { projectId } = useParams<{projectId: string}>()
+    const { projectId, projectSlug } = useParams<{projectId: string, projectSlug: string}>()
     const { project, projectUpdates, pageInfo } = useGamuxProjectPage(projectId)
     
     if (!project || !pageInfo)
         return
+
+    if (project.slug != projectSlug)
+        return <Navigate to={`/project/${project.id}/${project.slug}`} />
 
     const theme = {
         '--bg': pageInfo.bgColor,
@@ -39,7 +42,7 @@ function GamuxProjectPage({}: GamuxProjectPageProps) {
 
                 <div className="w-full flex max-md:flex-col-reverse p-10 max-md:p-6 max-md:gap-4">
                     <LeftSection data={pageInfo} updates={projectUpdates} project={project} />
-                    <RightSection project={project} />
+                    <RightSection project={project} pageInfo={pageInfo} />
                 </div>
             </div>
 
