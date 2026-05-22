@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.gamux.website_api.domain.gamux_project.GamuxProject;
 import com.gamux.website_api.domain.gamux_project.GamuxProjectMember;
+import com.gamux.website_api.domain.gamux_project.GamuxProjectPageInfo;
 import com.gamux.website_api.domain.gamux_project.dto.AddMemberRequestDTO;
+import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectPageResponseDTO;
+import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectPageUpdateRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectResponseDTO;
 import com.gamux.website_api.domain.gamux_project.dto.GamuxProjectUpdateRequestDTO;
@@ -18,6 +21,7 @@ import com.gamux.website_api.domain.gamux_project.dto.ProjectMemberRequestDTO;
 import com.gamux.website_api.domain.gamux_project.dto.ProjectMemberResponseDTO;
 import com.gamux.website_api.domain.user.User;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectMemberRepository;
+import com.gamux.website_api.repositories.gamux_project.GamuxProjectPageInfoRepository;
 import com.gamux.website_api.repositories.gamux_project.GamuxProjectRepository;
 import com.gamux.website_api.repositories.user.UserRepository;
 
@@ -26,20 +30,12 @@ import jakarta.transaction.Transactional;
 @Service
 public class GamuxProjectService {
 
-    @Autowired
-    private GamuxProjectRepository gamuxProjectRepository;
-    
-    @Autowired
-    private GamuxProjectMemberRepository gamuxProjectMemberRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private SlugifyService slugifyService;
+    @Autowired private GamuxProjectRepository gamuxProjectRepository;
+    @Autowired private GamuxProjectMemberRepository gamuxProjectMemberRepository;
+    @Autowired private GamuxProjectPageInfoRepository pageInfoRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private ImageService imageService;
+    @Autowired private SlugifyService slugifyService;
 
     @Transactional(rollbackOn = Exception.class)
     public GamuxProjectResponseDTO addProject(GamuxProjectRequestDTO data) throws Exception {
@@ -51,6 +47,10 @@ public class GamuxProjectService {
         savedProject.setLogo(logoUrl);
         gamuxProjectRepository.save(savedProject);
 
+        GamuxProjectPageInfo pageInfo = new GamuxProjectPageInfo();
+        pageInfo.setProject(savedProject);
+        pageInfoRepository.save(pageInfo);
+
         User teamLeader = userRepository.findByUsername(data.teamLeaderUsername()).orElse(null);
         if (teamLeader == null)
             throw new Exception("team leader doesn't exists.");
@@ -58,17 +58,19 @@ public class GamuxProjectService {
         List<GamuxProjectMember> members = new ArrayList<GamuxProjectMember>();
         members.add(new GamuxProjectMember(teamLeader, savedProject, "LEADER"));
 
-        members.addAll(data.teamMembersUsernames().stream()
-            .map((String username) -> {
-                User member = userRepository.findByUsername(username).orElse(null);
-                if (member != null)
-                    return new GamuxProjectMember(member, savedProject, "MEMBER");
-                
-                return null;
-            })
-            .filter(member -> member != null)
-            .toList()
-        );
+        if (data.teamMembersUsernames() != null) {
+            members.addAll(data.teamMembersUsernames().stream()
+                .map((String username) -> {
+                    User member = userRepository.findByUsername(username).orElse(null);
+                    if (member != null)
+                        return new GamuxProjectMember(member, savedProject, "MEMBER");
+                    
+                    return null;
+                })
+                .filter(member -> member != null)
+                .toList()
+            );
+        }
 
         List<GamuxProjectMember> savedMembers = gamuxProjectMemberRepository.saveAllAndFlush(members);
         return new GamuxProjectResponseDTO(savedProject, savedMembers.stream().map(ProjectMemberResponseDTO::new).toList());
@@ -150,5 +152,33 @@ public class GamuxProjectService {
     public void deleteProjectMember(ProjectMemberRequestDTO data, UUID projectId) {
         GamuxProjectMember member = gamuxProjectMemberRepository.findByProjectIdAndUserUsername(projectId, data.username()).orElse(null);
         gamuxProjectMemberRepository.delete(member);
+    }
+
+    public GamuxProjectPageResponseDTO getPageInfoByProjectId(UUID projectId) throws Exception {
+        GamuxProjectPageInfo pageInfo = pageInfoRepository.findByProjectId(projectId).orElse(null);
+        if (pageInfo == null)
+            throw new Exception("[ERRO] getPageInfoByProjectId: projeto não encontrado.");
+        return new GamuxProjectPageResponseDTO(pageInfo);
+    }
+
+    public GamuxProjectPageResponseDTO udpdateProjectPage(GamuxProjectPageUpdateRequestDTO data, UUID id) throws Exception {
+        GamuxProjectPageInfo pageInfo = pageInfoRepository.findByProjectId(id).orElse(null);
+        if (pageInfo == null)
+            throw new Exception("[ERRO] updateProjectPage: projeto não encontrado.");
+
+        if (!data.removeBanner()) {
+            if (data.banner() != null) {
+                String newBanner = imageService.uploadImage(data.banner());
+                imageService.deleteImage(pageInfo.getBanner());
+                pageInfo.setBanner(newBanner);
+            }
+        } else {
+            imageService.deleteImage(pageInfo.getBanner());
+            pageInfo.setBanner(null);
+        }
+
+        pageInfo.update(data);
+        pageInfoRepository.save(pageInfo);
+        return new GamuxProjectPageResponseDTO(pageInfo);
     }
 }
